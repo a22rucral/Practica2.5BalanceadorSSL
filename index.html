@@ -1,0 +1,663 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://mydomain.org/mysite/">
+      
+      
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
+    
+    
+      
+        <title>Balanceador SSL</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.0253249f.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#practica-25-proxy-inverso-y-balanceo-de-carga-con-ssl-en-nginx" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Balanceador SSL" class="md-header__button md-logo" aria-label="Balanceador SSL" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Balanceador SSL
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Practica 2.5 Proxy Inverso y balanceo de carga con SSL en Nginx.
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Balanceador SSL" class="md-nav__button md-logo" aria-label="Balanceador SSL" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Balanceador SSL
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Practica 2.5 Proxy Inverso y balanceo de carga con SSL en Nginx.
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Practica 2.5 Proxy Inverso y balanceo de carga con SSL en Nginx.
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introducción.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Introducción.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certificados" class="md-nav__link">
+    <span class="md-ellipsis">
+      Certificados
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tarea" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tarea.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tarea.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creacion-de-certificado-autofirmado" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creación de certificado autofirmado.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creación de certificado autofirmado.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#desglose-de-comando" class="md-nav__link">
+    <span class="md-ellipsis">
+      Desglose de comando.
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-ssl-en-el-proxy-inverso" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuración SSL en el Proxy inverso.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuración SSL en el Proxy inverso.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#desglose-de-configuracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Desglose de configuración.
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comprobaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comprobaciones.
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redireccion-forzosa-a-https" class="md-nav__link">
+    <span class="md-ellipsis">
+      Redirección forzosa a HTTPS.
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cuestiones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cuestiones.
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introducción.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Introducción.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certificados" class="md-nav__link">
+    <span class="md-ellipsis">
+      Certificados
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tarea" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tarea.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tarea.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creacion-de-certificado-autofirmado" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creación de certificado autofirmado.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creación de certificado autofirmado.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#desglose-de-comando" class="md-nav__link">
+    <span class="md-ellipsis">
+      Desglose de comando.
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-ssl-en-el-proxy-inverso" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuración SSL en el Proxy inverso.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuración SSL en el Proxy inverso.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#desglose-de-configuracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Desglose de configuración.
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comprobaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comprobaciones.
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redireccion-forzosa-a-https" class="md-nav__link">
+    <span class="md-ellipsis">
+      Redirección forzosa a HTTPS.
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cuestiones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cuestiones.
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="practica-25-proxy-inverso-y-balanceo-de-carga-con-ssl-en-nginx">Practica 2.5 Proxy Inverso y balanceo de carga con SSL en Nginx.</h1>
+<h2 id="introduccion">Introducción.</h2>
+<p>Una de las importantes funciones que tiene un proxy inverso era realizar un cifrado y descifrado de SSL para utilizar HTTPS en los servidores web. </p>
+<p><img alt="Imagen Esquema" src="assets/images/10imagenesquema.png" /></p>
+<p>El tráfico de red entre el balanceador de carga y los servidores va sin cifrar (HTTP). Esto se debe a que normalmente en un caso real, el proxy y los servidores, además de estar en la misma red privada suelen estar administrados por la misma empresa, por lo que no supone un peligro ese tráfico sin cifrar. </p>
+<h3 id="certificados">Certificados</h3>
+<p>HTTPS se basa en el uso de certificados digitales. Cuando accedemos a una web mediante HTTPS, nos presenta un certificado digital para asegurar de ser quien dice ser. La validez de este certificado se verifica en la Autoridad de Certificación que emitió ese certificado si es válido. Los navegadores web tienen precargadas las Autoridades de Certificación en las que confían por defecto a la hora de navegar por web HTTPS.</p>
+<p>En caso de que no tenga certificado o no lo haya firmado la CA, nos saltará un aviso de que la página web no es segura.</p>
+<h2 id="tarea">Tarea.</h2>
+<p>Esquema objetivo de  la practica:</p>
+<p><img alt="Esquema Trabajado" src="assets/images/esquematotal.png" /></p>
+<h3 id="creacion-de-certificado-autofirmado">Creación de certificado autofirmado.</h3>
+<p>Nosotros no utilizaremos certificados CA ya que nuestros servicios no está publicados en internet y esos certificados son de pago. Para su simulación los crearemos y firmaremos nosotros mismos. 
+Para empezar, crearemos el directorio <strong>ssl</strong> en la carpeta <strong>nginx</strong>: </p>
+<pre><code>cd /etc/nginx
+mkdir ssl
+</code></pre>
+<p>Tras esto pondremos el siguiente comando para crear el certificado y las claves;</p>
+<pre><code>sudo openssl req -x509 -nodes - days 365 -newkey rsa:2048 -keyout /etc/ngix/ssl/server.key -out /etc/nginx/ssl/server.crt
+
+</code></pre>
+<p><img alt="Comando Certificacion" src="assets/images/01comando_generarclavebalanceo.png" /></p>
+<p>Si todo esta escrito correctamente. Como vemos en la imagen deberemos introducir unos parametros para el certificado. Como nuestra ciudad, email, centro...</p>
+<h4 id="desglose-de-comando">Desglose de comando.</h4>
+<ul>
+<li>openssl: herramienta por linea de comandos para crear y administrar certificados u otros archivos OpenSSL</li>
+<li>req: subcomando utilizado para generar solicitud de certificados.</li>
+<li>-x509: Esto modifica el subcoando anterior al decirle que queremos crear un certificado autofirmado en lugar de solicitud de firma de certificado. </li>
+<li>-nodes: Esto le dice a OpenSSL que omita la opcion de asegurar nuestro certificado con contraseña. Ya que necesitamos que nginx lo lea sin intervención del usuario.</li>
+<li>-days 365: Aquí definimos el tiempo que será válida la clave. </li>
+<li>-newkey rsa:2048: Esto especifica que queremos crear un nuevo certificado y una nueva clave al mismo tiempo. </li>
+<li>-keyout: Este parametro indica dónde colocar el archivo de clave privada. </li>
+<li>-out: Esto le dice a OpenSSL dónde colocar el certificado que estamos creando. </li>
+</ul>
+<h3 id="configuracion-ssl-en-el-proxy-inverso">Configuración SSL en el Proxy inverso.</h3>
+<p>Ya visto anteriormente, nos iremos al archivo de configuración del proxy ubicado en la ruta /etc/nginx/sites-avaliable. Este archivo lo editaremos para poner la configuración para que el acceso al sitio web se realice mediante SSL. </p>
+<p>Dentro del bloque server{...}, cambiaremos el puerto de escucha <strong>listen 80</strong> por lo que veis en la imagen de abajo. Quedará tal que así: </p>
+<p><img alt="Imagen Configuración Balanceo" src="assets/images/03comando_configuracionproxy.png" /></p>
+<h4 id="desglose-de-configuracion">Desglose de configuración.</h4>
+<p>Le estamos diciendo que escuche por el puerto 443, que es el puerto por defecto de HTTPS. Le hemos indicado el directorio donde está el certificado y la clave que hemos generado anteriormente. 
+Los protocoloes y tipos de cifrado que pueden utilizar y por último el archivo donde se guardan los logs cambia de nombre, ahora será https_access.log. </p>
+<p>Tras este cambio de configuración resetearemos el servicio de Nginx. </p>
+<pre><code>sudo systemctl restart nginx
+
+</code></pre>
+<h3 id="comprobaciones">Comprobaciones.</h3>
+<p>Si accedemos ahora al balanceador, la primera vez nos dará un aviso ya que el certificado es autofirmado. Aceptaremos el riesgo y recargamos repetidamente la página web con F5 vereis que el balanceo de carga se hace correctamente accediendo mediante https. 
+Para ver los detaller del certificado, le daremos click a conexión no segura, se nos despegará un menú y le daremos a la opción de <strong>detalles de certificado</strong> y nos saldrá nuestro certificado con los datos introducidos. </p>
+<p><img alt="Detalles certificado" src="assets/images/04comando_certificadodetalles.png" /></p>
+<h3 id="redireccion-forzosa-a-https">Redirección forzosa a HTTPS.</h3>
+<p>Para que, indistintivammente de la forma por la que accedamos al sitio web balanceo siempre fuerce a utilizar  HTTPS, necesitaremos configuración adicional. Añadiremos un bloque de server que se quede tal que así: </p>
+<p><img alt="Bloque servido+" src="assets/images/05comando_redireccionhttps.png" /></p>
+<p>Con esto indicamos que escuche el puerto 80, que se guarde los logs de este bloque en ese directorio y con ese nombre. Cuando se reciba una petición con las dos condiciones anteriores, se devuelve un código HTTP 301:<br />
+-   HTTP 301 Moved Permanently: Es un código de estado de HTTP que ha habido comunicación entre el host y el servidor pero que el recurso solicitado ha sido movido a otra dirección permanentemente. Es muy importante configurar estas redirecciones en los sitios web. </p>
+<p>En conclusión, este bloque hace que cuando se reciba una petición HTTP (con el puerto 80) la redirija a HTTPS. </p>
+<h2 id="cuestiones">Cuestiones.</h2>
+<ol>
+<li>Hemos configurado nuestro proxy inverso con todo lo que nos hace falta pero no nos funciona y da un error del tipo This site can't provide a secure connection, ERR_SSL_PROTOCOL_ERROR.</li>
+</ol>
+<p>Dentro de nuestro server block tenemos esto:</p>
+<pre><code>server {
+    listen 443;
+    ssl_certificate /etc/nginx/ssl/enrico-berlinguer/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/enrico-berlinguer/server.key;
+    ssl_protocols TLSv1.3;
+    ssl_ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS;
+    server_name enrico-berlinguer;
+    access_log /var/log/nginx/https_access.log;
+
+    location / {
+        proxy_pass http://red-party;
+        }
+    }
+
+</code></pre>
+<p>Añadiremos ssl tras 443 para indicarle que este bloque esta configurado para ssl. Solución. </p>
+<pre><code>server {
+    listen 443 ssl;
+    ssl_certificate /etc/nginx/ssl/enrico-berlinguer/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/enrico-berlinguer/server.key;
+    ssl_protocols TLSv1.3;
+    ssl_ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS;
+    server_name enrico-berlinguer;
+    access_log /var/log/nginx/https_access.log;
+
+    location / {
+        proxy_pass http://red-party;
+        }
+    }
+
+</code></pre>
+<ol>
+<li>Imaginad que intentamos acceder a nuestro sitio web HTTPS y nos encontramos con el siguiente error:</li>
+</ol>
+<p><img alt="Imagenerror" src="assets/images/Your-connection-isnt-private-NET-ERR_CERT_REVOKED.png" /></p>
+<p>Este aviso se produce cuando el navegador encuentran problemas con el certificado SSL de un sitio web, generalmente porque no provienen de la CA. La solución sería contratar los servicios y obtener un certificado de la CA. </p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>
